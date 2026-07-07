@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Category Classifier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        :root {
+            --ink: #0f0f0f;
+            --paper: #faf9f6;
+            --accent: #c8402e;
+            --gold: #c9a84c;
+            --muted: #6b6860;
+            --border: #e2dfd8;
+            --card-bg: #ffffff;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .top-rule {
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--gold) 60%, var(--accent) 100%);
+        }
+
+        header {
+            width: 100%;
+            max-width: 1060px;
+            padding: 52px 24px 32px;
+            text-align: center;
+            animation: fadeDown .55s ease both;
+        }
+
+        .eyebrow {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 14px;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 700;
+            line-height: 1.1;
+            color: var(--ink);
+        }
+
+        .tagline {
+            margin-top: 12px;
+            font-size: 15px;
+            color: var(--muted);
+            font-weight: 300;
+        }
+
+        .divider {
+            width: 48px;
+            height: 2px;
+            background: var(--gold);
+            margin: 20px auto 0;
+            border-radius: 2px;
+        }
+
+        main {
+            width: 100%;
+            max-width: 1060px;
+            padding: 0 24px 72px;
+            animation: fadeUp .6s ease .1s both;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 720px) {
+            .layout { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 2px 24px rgba(0,0,0,.06), 0 1px 4px rgba(0,0,0,.04);
+        }
+
+        .card-header {
+            padding: 28px 36px 22px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            flex-shrink: 0;
+        }
+
+        .icon-upload  { background: #fef3e2; }
+        .icon-preview { background: #e8f0fe; }
+
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .card-body { padding: 32px 36px; }
+
+        /* Upload zone */
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 40px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color .2s, background .2s;
+            position: relative;
+        }
+
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: var(--accent);
+            background: rgba(200,64,46,.03);
+        }
+
+        .upload-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .upload-icon { font-size: 36px; margin-bottom: 14px; }
+
+        .upload-zone p {
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .upload-zone strong { color: var(--ink); font-weight: 500; }
+
+        .file-name {
+            margin-top: 14px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--accent);
+            min-height: 20px;
+        }
+
+        .btn {
+            margin-top: 24px;
+            width: 100%;
+            padding: 14px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: .04em;
+            color: #fff;
+            background: var(--ink);
+            border: none;
+            border-radius: 9px;
+            cursor: pointer;
+            transition: background .2s, transform .15s;
+        }
+
+        .btn:hover { background: var(--accent); transform: translateY(-1px); }
+        .btn:active { transform: translateY(0); }
+        .btn:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; transform: none; }
+
+        /* Results */
+        .result-section {
+            margin-top: 28px;
+            padding-top: 28px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .block-label {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 8px 18px;
+            background: var(--ink);
+            color: #fff;
+            border-radius: 100px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .score-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .score-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        .score-bar-wrap {
+            flex: 1;
+            height: 8px;
+            background: var(--border);
+            border-radius: 100px;
+            overflow: hidden;
+        }
+
+        .score-bar-fill {
+            height: 100%;
+            border-radius: 100px;
+            background: linear-gradient(90deg, var(--gold), var(--accent));
+        }
+
+        .result-message {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.6;
+            font-style: italic;
+        }
+
+        /* Preview */
+        .preview-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            height: 520px;
+            background: var(--paper);
+            border-radius: 10px;
+            color: var(--muted);
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .preview-placeholder .ph-icon { font-size: 42px; opacity: .35; }
+
+        #pdf-preview-frame {
+            width: 100%;
+            height: 520px;
+            border: none;
+            border-radius: 10px;
+            display: none;
+        }
+
+        footer {
+            padding: 24px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--muted);
+            letter-spacing: .04em;
+        }
+
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .progress-bar { background: #eee; border-radius: 8px; height: 18px; margin: 8px 0; }
+.bar          { height: 18px; border-radius: 8px; transition: width 0.5s; }
+.skill-tags   { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.tag          { padding: 4px 12px; border-radius: 20px; font-size: 13px; }
+.tag.found    { background: #d4edda; color: #155724; }
+.tag.missing  { background: #fff3cd; color: #856404; }
+.category-badge { font-size: 1.4rem; font-weight: bold; color: #2c3e50; }
+    </style>
+</head>
+<body>
+
+<div class="top-rule"></div>
+
+<header>
+    <p class="eyebrow">AI-Powered Tool</p>
+    <h1>Resume Category Classifier</h1>
+    <p class="tagline">Upload your résumé and instantly discover the most relevant job category</p>
+    <div class="divider"></div>
+</header>
+
+<main>
+    <div class="layout">
+
+        <!-- Left: Upload + Results -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon icon-upload">📄</div>
+                <span class="card-title">Upload Résumé</span>
+            </div>
+            <div class="card-body">
+
+                <form action="/resume-classifier" method="POST" enctype="multipart/form-data" id="upload-form">
+                    <div class="upload-zone" id="drop-zone">
+                        <input type="file" name="file" id="file" accept=".pdf" required>
+                        <div class="upload-icon">☁️</div>
+                        <p><strong>Drag & drop your PDF here</strong><br>or click to browse files</p>
+                        <div class="file-name" id="file-name-display">No file selected</div>
+                    </div>
+                    <button class="btn" type="submit" id="submit-btn" disabled>Predict Category →</button>
+                </form>
+
+                {% if category %}
+<div class="result-card">
+
+  <h2>Predicted Category</h2>
+  <p class="category-badge">{{ category }}</p>
+
+  <h2>ATS Score: {{ ats }}%</h2>
+  <div class="progress-bar">
+    <div class="bar" style="width: {{ ats }}%;
+      background: {% if ats >= 70 %}#2ecc71{% elif ats >= 40 %}#f39c12{% else %}#e74c3c{% endif %}">
+    </div>
+  </div>
+  <small>Cosine match: {{ cos_score }}% &nbsp;|&nbsp; Skill coverage: {{ skill_score }}%</small>
+
+  {% if found_skills %}
+  <h3>✅ Skills Found ({{ found_skills|length }})</h3>
+  <div class="skill-tags">
+    {% for s in found_skills %}
+      <span class="tag found">{{ s }}</span>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if missing_skills %}
+  <h3>⚠️ Missing Skills</h3>
+  <div class="skill-tags">
+    {% for s in missing_skills %}
+      <span class="tag missing">{{ s }}</span>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if tips %}
+  <h3>💡 Improvement Tips</h3>
+  <ul>
+    {% for tip in tips %}
+      <li>{{ tip }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+</div>
+{% endif %}
+
+{% if error %}
+  <p style="color:red">{{ error }}</p>
+{% endif %}
+
+            </div>
+        </div>
+
+        <!-- Right: PDF Preview -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon icon-preview">🔍</div>
+                <span class="card-title">Résumé Preview</span>
+            </div>
+            <div class="card-body">
+                <div id="preview-placeholder" class="preview-placeholder">
+                    <div class="ph-icon">📋</div>
+                    <p>Your résumé will appear here<br>once you select a file</p>
+                </div>
+                <iframe id="pdf-preview-frame" title="PDF Preview"></iframe>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<footer>Resume Classifier &nbsp;·&nbsp; Powered by AI</footer>
+
+<script>
+    const fileInput   = document.getElementById('file');
+    const fileLabel   = document.getElementById('file-name-display');
+    const submitBtn   = document.getElementById('submit-btn');
+    const dropZone    = document.getElementById('drop-zone');
+    const frame       = document.getElementById('pdf-preview-frame');
+    const placeholder = document.getElementById('preview-placeholder');
+
+    function handleFile(file) {
+        if (!file || file.type !== 'application/pdf') return;
+        fileLabel.textContent = file.name;
+        submitBtn.disabled = false;
+        const url = URL.createObjectURL(file);
+        frame.src = url;
+        frame.style.display = 'block';
+        placeholder.style.display = 'none';
+    }
+
+    fileInput.addEventListener('change', () => handleFile(fileInput.files[0]));
+
+    dropZone.addEventListener('dragover', e => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+
+    dropZone.addEventListener('drop', e => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file) {
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            fileInput.files = dt.files;
+            handleFile(file);
+        }
+    });
+</script>
+
+</body>
+</html>

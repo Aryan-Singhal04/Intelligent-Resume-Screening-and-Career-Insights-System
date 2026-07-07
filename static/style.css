@@ -1,0 +1,194 @@
+/* ===========================
+   GLOBAL STYLES
+=========================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body{
+    background:#f4f7fb;
+    color:#333;
+    min-height:100vh;
+}
+
+/* ===========================
+   NAVBAR
+=========================== */
+
+nav{
+    background:#1f4e79;
+    padding:15px 50px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+nav h2{
+    color:white;
+}
+
+nav ul{
+    display:flex;
+    list-style:none;
+    gap:20px;
+}
+
+nav ul li a{
+    color:white;
+    text-decoration:none;
+    font-weight:500;
+    transition:.3s;
+}
+
+nav ul li a:hover{
+    color:#ffd54f;
+}
+
+/* ===========================
+   PAGE CONTAINER
+=========================== */
+
+.container{
+    width:90%;
+    max-width:1200px;
+    margin:40px auto;
+}
+
+/* ===========================
+   CARD
+=========================== */
+
+.card{
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 5px 15px rgba(0,0,0,.1);
+    margin-bottom:25px;
+}
+
+/* ===========================
+   HEADINGS
+=========================== */
+
+h1{
+    color:#1f4e79;
+    margin-bottom:20px;
+}
+
+h2{
+    color:#1f4e79;
+    margin-bottom:15px;
+}
+
+/* ===========================
+   FORM
+=========================== */
+
+form{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+input,
+textarea,
+select{
+    width:100%;
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    font-size:16px;
+}
+
+textarea{
+    resize:vertical;
+}
+
+/* ===========================
+   BUTTON
+=========================== */
+
+button,
+.btn{
+    background:#1f4e79;
+    color:white;
+    border:none;
+    padding:12px 25px;
+    border-radius:8px;
+    cursor:pointer;
+    text-decoration:none;
+    font-size:16px;
+    transition:.3s;
+}
+
+button:hover,
+.btn:hover{
+    background:#163d61;
+}
+
+/* ===========================
+   RESULT BOX
+=========================== */
+
+.result{
+    margin-top:25px;
+    background:#eef5ff;
+    border-left:5px solid #1f4e79;
+    padding:20px;
+    border-radius:8px;
+}
+
+/* ===========================
+   ALERT
+=========================== */
+
+.error{
+    background:#ffe6e6;
+    color:#d8000c;
+    padding:12px;
+    border-radius:8px;
+}
+
+.success{
+    background:#e7f8e7;
+    color:#2e7d32;
+    padding:12px;
+    border-radius:8px;
+}
+
+/* ===========================
+   TABLE
+=========================== */
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+table th,
+table td{
+    border:1px solid #ddd;
+    padding:12px;
+    text-align:left;
+}
+
+table th{
+    background:#1f4e79;
+    color:white;
+}
+
+/* ===========================
+   FOOTER
+=========================== */
+
+footer{
+    margin-top:50px;
+    padding:20px;
+    text-align:center;
+    background:#1f4e79;
+    color:white;
+}

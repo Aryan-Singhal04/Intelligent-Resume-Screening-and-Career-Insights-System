@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Role Predictor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #0f0f0f;
+            --paper: #faf9f6;
+            --accent: #c8402e;
+            --gold: #c9a84c;
+            --muted: #6b6860;
+            --border: #e2dfd8;
+            --card-bg: #ffffff;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .top-rule {
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--gold) 60%, var(--accent) 100%);
+        }
+
+        header {
+            width: 100%;
+            max-width: 860px;
+            padding: 52px 24px 32px;
+            text-align: center;
+            animation: fadeDown .55s ease both;
+        }
+
+        .eyebrow {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 14px;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        .tagline {
+            margin-top: 12px;
+            font-size: 15px;
+            color: var(--muted);
+            font-weight: 300;
+        }
+
+        .divider {
+            width: 48px;
+            height: 2px;
+            background: var(--gold);
+            margin: 20px auto 0;
+            border-radius: 2px;
+        }
+
+        main {
+            width: 100%;
+            max-width: 860px;
+            padding: 0 24px 72px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            animation: fadeUp .6s ease .1s both;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 2px 24px rgba(0,0,0,.06), 0 1px 4px rgba(0,0,0,.04);
+        }
+
+        .card-header {
+            padding: 26px 36px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            flex-shrink: 0;
+        }
+
+        .icon-input  { background: #fef3e2; }
+        .icon-result { background: #e8f5e9; }
+        .icon-others { background: #e8f0fe; }
+
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .card-body { padding: 32px 36px; }
+
+        .field-label {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        textarea {
+            width: 100%;
+            height: 130px;
+            padding: 16px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--ink);
+            background: var(--paper);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            resize: vertical;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(200,64,46,.1);
+        }
+
+        textarea::placeholder { color: #b0ada7; }
+
+        .chips-label {
+            font-size: 12px;
+            color: var(--muted);
+            margin: 14px 0 8px;
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .chip {
+            padding: 5px 13px;
+            font-size: 12px;
+            font-weight: 500;
+            border-radius: 100px;
+            border: 1px solid var(--border);
+            background: var(--paper);
+            color: var(--ink);
+            cursor: pointer;
+            transition: background .15s, border-color .15s, color .15s;
+            user-select: none;
+        }
+
+        .chip:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+        .chip.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+        .btn {
+            margin-top: 20px;
+            width: 100%;
+            padding: 14px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: .04em;
+            color: #fff;
+            background: var(--ink);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background .2s, transform .15s;
+        }
+
+        .btn:hover { background: var(--accent); transform: translateY(-1px); }
+        .btn:active { transform: translateY(0); }
+
+        .error-box {
+            padding: 14px 18px;
+            background: #fce4ec;
+            border: 1px solid #f48fb1;
+            border-radius: 10px;
+            color: #c62828;
+            font-size: 14px;
+        }
+
+        /* Result */
+        .result-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 32px;
+            align-items: center;
+        }
+
+        @media (max-width: 560px) {
+            .result-grid { grid-template-columns: 1fr; text-align: center; }
+            .card-body { padding: 24px; }
+            .card-header { padding: 20px 24px 16px; }
+        }
+
+        .score-big { text-align: center; min-width: 120px; }
+
+        .score-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 68px;
+            font-weight: 700;
+            line-height: 1;
+            background: linear-gradient(135deg, var(--gold), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .score-unit { font-size: 22px; font-family: 'Playfair Display', serif; }
+
+        .score-label {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .verdict {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 5px 13px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .verdict-strong   { background: #e8f5e9; color: #2e7d32; }
+        .verdict-moderate { background: #fff8e1; color: #f57f17; }
+        .verdict-low      { background: #fce4ec; color: #c62828; }
+
+        .result-details { display: flex; flex-direction: column; gap: 16px; }
+
+        .detail-micro {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .job-badge {
+            display: inline-block;
+            padding: 9px 22px;
+            background: var(--ink);
+            color: #fff;
+            border-radius: 100px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .bar-track {
+            height: 8px;
+            background: var(--border);
+            border-radius: 100px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 100px;
+            background: linear-gradient(90deg, var(--gold), var(--accent));
+        }
+
+        /* Others */
+        .others-list { display: flex; flex-direction: column; gap: 14px; }
+
+        .other-row { display: flex; align-items: center; gap: 16px; }
+
+        .other-rank {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gold);
+            width: 28px;
+            flex-shrink: 0;
+            text-align: center;
+        }
+
+        .other-info { flex: 1; }
+        .other-name { font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+        .other-pct  { font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+        footer {
+            padding: 24px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--muted);
+            letter-spacing: .04em;
+        }
+
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scoreIn {
+            from { opacity: 0; transform: scale(.94); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-rule"></div>
+
+<header>
+    <p class="eyebrow">AI-Powered Tool</p>
+    <h1>Job Role Predictor</h1>
+    <p class="tagline">Enter your skills and instantly discover the best-fit job roles for you</p>
+    <div class="divider"></div>
+</header>
+
+<main>
+
+    <!-- Input Card -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-icon icon-input">🧠</div>
+            <span class="card-title">Your Skills</span>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="/job-prediction">
+                <label class="field-label" for="skills">List your skills (comma-separated or freeform)</label>
+                <textarea
+                    name="skills"
+                    id="skills"
+                    placeholder="e.g. Python, machine learning, SQL, data visualization, TensorFlow, communication..."
+                    required
+                >{{ skills_input or '' }}</textarea>
+
+                <p class="chips-label">Quick-add popular skills →</p>
+                <div class="chips" id="chip-container">
+                    <span class="chip" data-skill="Python">Python</span>
+                    <span class="chip" data-skill="Machine Learning">Machine Learning</span>
+                    <span class="chip" data-skill="SQL">SQL</span>
+                    <span class="chip" data-skill="JavaScript">JavaScript</span>
+                    <span class="chip" data-skill="React">React</span>
+                    <span class="chip" data-skill="Data Analysis">Data Analysis</span>
+                    <span class="chip" data-skill="TensorFlow">TensorFlow</span>
+                    <span class="chip" data-skill="Docker">Docker</span>
+                    <span class="chip" data-skill="AWS">AWS</span>
+                    <span class="chip" data-skill="Java">Java</span>
+                    <span class="chip" data-skill="NLP">NLP</span>
+                    <span class="chip" data-skill="Excel">Excel</span>
+                </div>
+
+                <button class="btn" type="submit">Predict My Role →</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Error -->
+    {% if error %}
+    <div class="error-box">⚠️ {{ error }}</div>
+    {% endif %}
+
+    <!-- Best Match -->
+    {% if prediction %}
+    <div class="card" style="animation: scoreIn .5s ease both;">
+        <div class="card-header">
+            <div class="card-icon icon-result">🎯</div>
+            <span class="card-title">Best Match</span>
+        </div>
+        <div class="card-body">
+            <div class="result-grid">
+                <div class="score-big">
+                    <div class="score-number">{{ score }}<span class="score-unit">%</span></div>
+                    <div class="score-label">Confidence</div>
+                    <div class="verdict verdict-{{ verdict[1] }}">{{ verdict[0] }}</div>
+                </div>
+                <div class="result-details">
+                    <div>
+                        <div class="detail-micro">Predicted Job Role</div>
+                        <span class="job-badge">{{ prediction }}</span>
+                    </div>
+                    <div>
+                        <div class="detail-micro">Confidence Score</div>
+                        <div class="bar-track">
+                            <div class="bar-fill" style="width: {{ score }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Runner-ups -->
+    {% if others %}
+    <div class="card" style="animation: scoreIn .5s ease .1s both;">
+        <div class="card-header">
+            <div class="card-icon icon-others">📊</div>
+            <span class="card-title">Other Possible Roles</span>
+        </div>
+        <div class="card-body">
+            <div class="others-list">
+                {% for job, sc in others %}
+                <div class="other-row">
+                    <div class="other-rank">#{{ loop.index + 1 }}</div>
+                    <div class="other-info">
+                        <div class="other-name">{{ job }}</div>
+                        <div class="bar-track">
+                            <div class="bar-fill" style="width: {{ sc }}%"></div>
+                        </div>
+                    </div>
+                    <div class="other-pct">{{ sc }}%</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endif %}
+
+</main>
+
+<footer>Job Role Predictor &nbsp;·&nbsp; Powered by AI</footer>
+
+<script>
+    const textarea = document.getElementById('skills');
+    const chips    = document.querySelectorAll('.chip');
+
+    chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            const skill    = chip.dataset.skill;
+            const current  = textarea.value.trim();
+            const existing = current.split(',').map(s => s.trim().toLowerCase());
+            if (existing.includes(skill.toLowerCase())) return;
+            textarea.value = current ? current + ', ' + skill : skill;
+            chip.classList.add('active');
+        });
+    });
+</script>
+
+</body>
+</html>

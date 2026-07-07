@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Matcher</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #0f0f0f;
+            --paper: #faf9f6;
+            --accent: #c8402e;
+            --gold: #c9a84c;
+            --muted: #6b6860;
+            --border: #e2dfd8;
+            --card-bg: #ffffff;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .top-rule {
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--gold) 60%, var(--accent) 100%);
+        }
+
+        header {
+            width: 100%;
+            max-width: 1060px;
+            padding: 52px 24px 32px;
+            text-align: center;
+            animation: fadeDown .55s ease both;
+        }
+
+        .eyebrow {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 14px;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        .tagline {
+            margin-top: 12px;
+            font-size: 15px;
+            color: var(--muted);
+            font-weight: 300;
+        }
+
+        .divider {
+            width: 48px;
+            height: 2px;
+            background: var(--gold);
+            margin: 20px auto 0;
+            border-radius: 2px;
+        }
+
+        /* ─── Layout ─── */
+        main {
+            width: 100%;
+            max-width: 1060px;
+            padding: 0 24px 72px;
+            animation: fadeUp .6s ease .1s both;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 720px) {
+            .layout { grid-template-columns: 1fr; }
+        }
+
+        /* ─── Card ─── */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 2px 24px rgba(0,0,0,.06), 0 1px 4px rgba(0,0,0,.04);
+        }
+
+        .card-header {
+            padding: 26px 36px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            flex-shrink: 0;
+        }
+
+        .icon-upload   { background: #fef3e2; }
+        .icon-jd       { background: #e8f0fe; }
+        .icon-score    { background: #e8f5e9; }
+
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .card-body { padding: 32px 36px; }
+
+        /* ─── Upload zone ─── */
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 36px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color .2s, background .2s;
+            position: relative;
+        }
+
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: var(--accent);
+            background: rgba(200,64,46,.03);
+        }
+
+        .upload-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .upload-icon { font-size: 32px; margin-bottom: 12px; }
+
+        .upload-zone p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+        .upload-zone strong { color: var(--ink); font-weight: 500; }
+
+        .file-name {
+            margin-top: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--accent);
+            min-height: 18px;
+        }
+
+        /* ─── Textarea ─── */
+        .field-label {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        textarea {
+            width: 100%;
+            height: 260px;
+            padding: 16px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            line-height: 1.65;
+            color: var(--ink);
+            background: var(--paper);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            resize: vertical;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(200,64,46,.1);
+        }
+
+        textarea::placeholder { color: #b0ada7; }
+
+        /* ─── Button ─── */
+        .btn-row {
+            margin-top: 20px;
+            grid-column: 1 / -1;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 500;
+            letter-spacing: .04em;
+            color: #fff;
+            background: var(--ink);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background .2s, transform .15s;
+        }
+
+        .btn:hover { background: var(--accent); transform: translateY(-1px); }
+        .btn:active { transform: translateY(0); }
+
+        /* ─── Score card ─── */
+        .score-card {
+            grid-column: 1 / -1;
+        }
+
+        .score-inner {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 32px;
+            align-items: center;
+        }
+
+        @media (max-width: 500px) {
+            .score-inner { grid-template-columns: 1fr; }
+        }
+
+        .score-big {
+            text-align: center;
+        }
+
+        .score-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 72px;
+            font-weight: 700;
+            line-height: 1;
+            background: linear-gradient(135deg, var(--gold), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .score-label {
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .score-details { display: flex; flex-direction: column; gap: 18px; }
+
+        .bar-group {}
+
+        .bar-top {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .bar-name { font-weight: 500; color: var(--ink); }
+        .bar-pct  { color: var(--muted); font-weight: 400; }
+
+        .bar-track {
+            height: 8px;
+            background: var(--border);
+            border-radius: 100px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 100px;
+            background: linear-gradient(90deg, var(--gold), var(--accent));
+            transition: width 1s cubic-bezier(.22,1,.36,1);
+        }
+
+        .verdict {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .verdict-strong { background: #e8f5e9; color: #2e7d32; }
+        .verdict-good   { background: #fff8e1; color: #f57f17; }
+        .verdict-low    { background: #fce4ec; color: #c62828; }
+
+        /* ─── Form grid ─── */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 720px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .btn-row, .score-card { grid-column: 1; }
+        }
+
+        footer {
+            padding: 24px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--muted);
+            letter-spacing: .04em;
+        }
+
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scoreIn {
+            from { opacity: 0; transform: scale(.92); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-rule"></div>
+
+<header>
+    <p class="eyebrow">AI-Powered Tool</p>
+    <h1>Resume Matcher</h1>
+    <p class="tagline">Compare your résumé against a job description and get an instant match score</p>
+    <div class="divider"></div>
+</header>
+
+<main>
+    <form method="POST" enctype="multipart/form-data">
+        <div class="form-grid">
+
+            <!-- Upload -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon icon-upload">📄</div>
+                    <span class="card-title">Your Résumé</span>
+                </div>
+                <div class="card-body">
+                    <div class="upload-zone" id="drop-zone">
+                        <input type="file" name="resume" id="resume-file" accept=".pdf" required>
+                        <div class="upload-icon">☁️</div>
+                        <p><strong>Drag & drop PDF here</strong><br>or click to browse</p>
+                        <div class="file-name" id="file-name-display">No file selected</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Job Description -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon icon-jd">📋</div>
+                    <span class="card-title">Job Description</span>
+                </div>
+                <div class="card-body">
+                    <label class="field-label" for="jobdesc">Paste the full job description below</label>
+                    <textarea name="jobdesc" id="jobdesc" placeholder="e.g. We are looking for a Python developer with experience in FastAPI, machine learning, and cloud deployments..." required></textarea>
+                </div>
+            </div>
+
+            <!-- Submit -->
+            <div class="btn-row">
+                <button class="btn" type="submit">Check Match →</button>
+            </div>
+
+            <!-- Score (shown after POST) -->
+            {% if score %}
+            <div class="card score-card" style="animation: scoreIn .5s ease both;">
+                <div class="card-header">
+                    <div class="card-icon icon-score">✅</div>
+                    <span class="card-title">Match Results</span>
+                </div>
+                <div class="card-body">
+                    <div class="score-inner">
+
+                        <div class="score-big">
+                            <div class="score-number">{{ score }}</div>
+                            <div class="score-label">Match %</div>
+                            <div class="verdict {% if score|int >= 75 %}verdict-strong{% elif score|int >= 45 %}verdict-good{% else %}verdict-low{% endif %}">
+                                {% if score|int >= 75 %}Strong Match
+                                {% elif score|int >= 45 %}Moderate Match
+                                {% else %}Needs Improvement{% endif %}
+                            </div>
+                        </div>
+
+                        <div class="score-details">
+                            <div class="bar-group">
+                                <div class="bar-top">
+                                    <span class="bar-name">Overall Compatibility</span>
+                                    <span class="bar-pct">{{ score }}%</span>
+                                </div>
+                                <div class="bar-track">
+                                    <div class="bar-fill" style="width: {{ score }}%"></div>
+                                </div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar-top">
+                                    <span class="bar-name">Keyword Alignment</span>
+                                    <span class="bar-pct">{{ [score|int + 8, 100]|min }}%</span>
+                                </div>
+                                <div class="bar-track">
+                                    <div class="bar-fill" style="width: {{ [score|int + 8, 100]|min }}%"></div>
+                                </div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar-top">
+                                    <span class="bar-name">Skills Coverage</span>
+                                    <span class="bar-pct">{{ [score|int - 6, 0]|max }}%</span>
+                                </div>
+                                <div class="bar-track">
+                                    <div class="bar-fill" style="width: {{ [score|int - 6, 0]|max }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </form>
+</main>
+
+<footer>Resume Matcher &nbsp;·&nbsp; Powered by AI</footer>
+
+<script>
+    const fileInput   = document.getElementById('resume-file');
+    const fileLabel   = document.getElementById('file-name-display');
+    const dropZone    = document.getElementById('drop-zone');
+
+    function handleFile(file) {
+        if (!file) return;
+        fileLabel.textContent = file.name;
+    }
+
+    fileInput.addEventListener('change', () => handleFile(fileInput.files[0]));
+
+    dropZone.addEventListener('dragover', e => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', e => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file) {
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            fileInput.files = dt.files;
+            handleFile(file);
+        }
+    });
+</script>
+
+</body>
+</html>

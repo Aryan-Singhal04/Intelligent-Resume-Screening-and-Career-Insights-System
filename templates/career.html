@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CareerPath — AI Career Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0b0f1a;
+      --card: #131929;
+      --card2: #1a2235;
+      --border: #1f2e48;
+      --accent: #4f8ef7;
+      --accent2: #7c3aed;
+      --green: #22d3a0;
+      --yellow: #fbbf24;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 40px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(11,15,26,0.95);
+      position: sticky; top: 0; z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+    .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; }
+    .logo span { color: var(--accent); }
+    .nav-tag {
+      background: rgba(79,142,247,0.12); color: var(--accent);
+      padding: 4px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 500;
+      border: 1px solid rgba(79,142,247,0.25);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center; padding: 64px 20px 40px;
+      background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(79,142,247,0.08), transparent);
+    }
+    .hero h1 {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.15;
+      margin-bottom: 14px;
+    }
+    .hero h1 em { font-style: normal; color: var(--accent); }
+    .hero p { color: var(--muted); max-width: 500px; margin: 0 auto 36px; font-size: 1.05rem; }
+
+    /* ── FORM CARD ── */
+    .form-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px;
+      max-width: 780px; margin: 0 auto 24px;
+    }
+    .form-row {
+      display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end;
+    }
+    .form-group { flex: 1; min-width: 200px; }
+    .form-group label {
+      display: block; font-size: 0.78rem; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px; font-weight: 500;
+    }
+    select {
+      width: 100%; background: var(--card2); border: 1px solid var(--border);
+      color: var(--text); padding: 12px 16px; border-radius: 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.95rem; cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center;
+      transition: border-color .2s;
+    }
+    select:focus { outline: none; border-color: var(--accent); }
+    .btn {
+      padding: 13px 28px; border-radius: 10px; border: none;
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem;
+      cursor: pointer; transition: all .2s; white-space: nowrap;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #3b7af5; transform: translateY(-1px); }
+
+    /* ── CATEGORIES GRID ── */
+    .cat-grid {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      max-width: 780px; margin: 0 auto 40px;
+    }
+    .cat-pill {
+      background: var(--card); border: 1px solid var(--border);
+      color: var(--muted); padding: 6px 14px; border-radius: 20px;
+      font-size: 0.82rem; cursor: pointer; transition: all .15s;
+    }
+    .cat-pill:hover, .cat-pill.active {
+      border-color: var(--accent); color: var(--accent);
+      background: rgba(79,142,247,0.1);
+    }
+
+    /* ── MAIN CONTENT ── */
+    .content { max-width: 1100px; margin: 0 auto; padding: 0 20px 60px; }
+
+    /* ── CAREER HEADER ── */
+    .career-header {
+      background: linear-gradient(135deg, var(--card), var(--card2));
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 28px 32px; margin-bottom: 24px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+    }
+    .career-header-left { display: flex; align-items: center; gap: 16px; }
+    .career-icon { font-size: 2.8rem; }
+    .career-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.8rem; }
+    .career-desc { color: var(--muted); margin-top: 4px; max-width: 500px; }
+    .salary-badge {
+      background: rgba(34,211,160,0.12); border: 1px solid rgba(34,211,160,0.25);
+      color: var(--green); padding: 10px 20px; border-radius: 10px;
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem;
+    }
+
+    /* ── GRID LAYOUT ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+    @media (max-width: 700px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    /* ── SECTION CARD ── */
+    .section-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px;
+    }
+    .section-title {
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem;
+      text-transform: uppercase; letter-spacing: .06em; color: var(--muted);
+      margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+    }
+    .section-title::before {
+      content: ''; width: 3px; height: 16px; background: var(--accent); border-radius: 2px;
+    }
+
+    /* ── SKILLS ── */
+    .skills-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+    .skill-tag {
+      background: rgba(79,142,247,0.1); border: 1px solid rgba(79,142,247,0.2);
+      color: #93c5fd; padding: 5px 14px; border-radius: 20px; font-size: 0.85rem;
+    }
+
+    /* ── ROADMAP ── */
+    .roadmap-levels { display: flex; flex-direction: column; gap: 14px; }
+    .roadmap-level { position: relative; padding-left: 20px; }
+    .roadmap-level::before {
+      content: ''; position: absolute; left: 0; top: 8px; bottom: -14px;
+      width: 2px; background: var(--border);
+    }
+    .roadmap-level:last-child::before { display: none; }
+    .level-dot {
+      position: absolute; left: -5px; top: 4px;
+      width: 12px; height: 12px; border-radius: 50%;
+    }
+    .level-dot.beginner { background: var(--green); }
+    .level-dot.intermediate { background: var(--yellow); }
+    .level-dot.advanced { background: #f87171; }
+    .level-label {
+      font-size: 0.78rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .06em; margin-bottom: 6px;
+    }
+    .level-label.beginner { color: var(--green); }
+    .level-label.intermediate { color: var(--yellow); }
+    .level-label.advanced { color: #f87171; }
+    .level-items { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .level-items li { font-size: 0.88rem; color: var(--muted); }
+    .level-items li::before { content: '→ '; color: var(--border); }
+
+    /* ── INTERVIEW Q&A ── */
+    .qa-section { margin-bottom: 20px; }
+    .qa-list { display: flex; flex-direction: column; gap: 10px; }
+    .qa-item {
+      background: var(--card2); border: 1px solid var(--border);
+      border-radius: 10px; overflow: hidden;
+    }
+    .qa-question {
+      padding: 14px 18px; cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.92rem; font-weight: 500; transition: background .15s;
+      user-select: none;
+    }
+    .qa-question:hover { background: rgba(79,142,247,0.07); }
+    .qa-chevron { color: var(--muted); font-size: 1rem; transition: transform .25s; }
+    .qa-answer {
+      display: none; padding: 0 18px 16px;
+      font-size: 0.9rem; color: var(--muted); line-height: 1.65;
+    }
+    .qa-answer.loading { font-style: italic; color: var(--accent); }
+    .qa-item.open .qa-chevron { transform: rotate(180deg); }
+    .qa-item.open .qa-answer { display: block; }
+    .ai-badge {
+      font-size: 0.7rem; background: rgba(124,58,237,0.15);
+      border: 1px solid rgba(124,58,237,0.3); color: #a78bfa;
+      padding: 2px 8px; border-radius: 10px; margin-left: 10px;
+      font-weight: 600; letter-spacing: .04em;
+    }
+
+    /* ── COMPARE ── */
+    .compare-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;
+    }
+    @media (max-width: 700px) { .compare-grid { grid-template-columns: 1fr; } }
+    .compare-vs {
+      text-align: center; font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 1.1rem; color: var(--muted); padding: 14px 0;
+      grid-column: 1/-1;
+    }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      text-align: center; padding: 80px 20px;
+      color: var(--muted);
+    }
+    .empty-icon { font-size: 3.5rem; margin-bottom: 16px; }
+    .empty-state h2 { font-family: 'Syne', sans-serif; font-size: 1.3rem; margin-bottom: 8px; color: var(--text); }
+
+    /* ── COMPARE MINI CARD ── */
+    .compare-mini {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px;
+    }
+    .compare-mini h3 {
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 12px;
+    }
+
+    /* typing animation */
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    .cursor::after { content:'|'; animation: blink 1s infinite; color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Career<span>Path</span></div>
+  <span class="nav-tag">🎯 Career Guide</span>
+</nav>
+
+<div class="hero">
+  <h1>Explore Your <em>Tech Career</em><br/>with AI Guidance</h1>
+  <p>Pick a career to see required skills, salary range, roadmap, and get AI-powered interview prep.</p>
+
+  <div class="form-card">
+    <form method="POST" action="/career-insights">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Select Career</label>
+          <select name="category" required>
+            <option value="" disabled {% if not selected %}selected{% endif %}>Choose a career...</option>
+            {% for name, info in categories.items() %}
+            <option value="{{ name }}" {% if selected == name %}selected{% endif %}>
+              {{ info.icon }} {{ name }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Compare With (Optional)</label>
+          <select name="compare_category">
+            <option value="">— No comparison —</option>
+            {% for name, info in categories.items() %}
+            <option value="{{ name }}" {% if compare_selected == name %}selected{% endif %}>
+              {{ info.icon }} {{ name }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Explore →</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="content">
+
+  {% if not data %}
+  <div class="empty-state">
+    <div class="empty-icon">🧭</div>
+    <h2>Select a career to get started</h2>
+    <p>Explore skills, salary, roadmap, and practice interviews — all in one place.</p>
+  </div>
+
+  {% else %}
+
+  <!-- Career Header -->
+  <div class="career-header">
+    <div class="career-header-left">
+      <div class="career-icon">{{ data.icon }}</div>
+      <div>
+        <div class="career-title">{{ selected }}</div>
+        <div class="career-desc">{{ data.description }}</div>
+      </div>
+    </div>
+    <div class="salary-badge">💰 {{ data.salary }}</div>
+  </div>
+
+  <!-- Skills + Roadmap -->
+  <div class="grid-2">
+    <div class="section-card">
+      <div class="section-title">Required Skills</div>
+      <div class="skills-wrap">
+        {% for skill in data.skills %}
+        <span class="skill-tag">{{ skill }}</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-title">Learning Roadmap</div>
+      <div class="roadmap-levels">
+        {% for level, items in data.roadmap.items() %}
+        <div class="roadmap-level">
+          <div class="level-dot {{ level.lower() }}"></div>
+          <div class="level-label {{ level.lower() }}">{{ level }}</div>
+          <ul class="level-items">
+            {% for item in items %}
+            <li>{{ item }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Interview Q&A -->
+  <div class="section-card qa-section">
+    <div class="section-title">Interview Questions & Answers</div>
+    <div class="qa-list">
+      {% for q in data.questions %}
+      <div class="qa-item" data-question="{{ q }}" data-career="{{ selected }}">
+        <div class="qa-question">
+          <span>{{ q }}</span>
+          <span class="qa-chevron">▾</span>
+        </div>
+        <div class="qa-answer"></div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Comparison Section -->
+  {% if compare_data %}
+  <div class="section-card">
+    <div class="section-title">Career Comparison</div>
+    <div class="compare-grid">
+      <div class="compare-mini">
+        <h3>{{ data.icon }} {{ selected }}</h3>
+        <div style="color:var(--green);font-weight:600;margin-bottom:10px;">{{ data.salary }}</div>
+        <div class="skills-wrap">
+          {% for skill in data.skills %}
+          <span class="skill-tag">{{ skill }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="compare-mini">
+        <h3>{{ compare_data.icon }} {{ compare_selected }}</h3>
+        <div style="color:var(--yellow);font-weight:600;margin-bottom:10px;">{{ compare_data.salary }}</div>
+        <div class="skills-wrap">
+          {% for skill in compare_data.skills %}
+          <span class="skill-tag">{{ skill }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  {% endif %}
+
+</div>
+
+<script>
+  // AI-powered interview Q&A accordion
+  document.querySelectorAll('.qa-item').forEach(item => {
+    item.querySelector('.qa-question').addEventListener('click', async () => {
+      const wasOpen = item.classList.contains('open');
+
+      // close all
+      document.querySelectorAll('.qa-item').forEach(i => i.classList.remove('open'));
+
+      if (wasOpen) return;
+
+      item.classList.add('open');
+      const answerEl = item.querySelector('.qa-answer');
+
+      // already fetched?
+      if (answerEl.dataset.loaded) return;
+
+      const question = item.dataset.question;
+      const career = item.dataset.career;
+
+      answerEl.classList.add('loading');
+      answerEl.textContent = 'Generating AI answer...';
+
+      try {
+        const res = await fetch('/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question, career })
+        });
+        const data = await res.json();
+        answerEl.classList.remove('loading');
+        answerEl.textContent = data.answer || 'Could not get answer.';
+        answerEl.dataset.loaded = '1';
+      } catch (e) {
+        answerEl.classList.remove('loading');
+        answerEl.textContent = 'Error fetching answer. Make sure ANTHROPIC_API_KEY is set.';
+      }
+    });
+  });
+</script>
+</body>
+</html>
