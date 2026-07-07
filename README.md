@@ -1,4 +1,4 @@
-# 🚀 AI Recruitment and Career Insights System
+# 🚀 Intelligent-Resume-Screening-and-Career-Insights-System
 
 An AI-powered recruitment platform that streamlines the hiring process by leveraging Machine Learning and Natural Language Processing (NLP). The system helps classify resumes, evaluate resume-job compatibility, predict suitable career roles based on skills, and provide valuable career insights for job seekers.
 
@@ -116,7 +116,7 @@ AI-Recruitment-System/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/AI-Recruitment-System.git
+git clone https://github.com/Aryan-Singhal04/Intelligent-Resume-Screening-and-Career-Insights-System.git
 ```
 
 ### 2. Navigate to the project
